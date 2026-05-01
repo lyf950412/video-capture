@@ -413,11 +413,11 @@ class MainWindow(QMainWindow):
         self.is_processing = False
         
         if getattr(sys, 'frozen', False):
-            base_path = os.path.dirname(sys.executable)
+            base_path = os.path.join(sys._MEIPASS, 'assets')
         else:
-            base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            base_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'assets')
         
-        icon_path = os.path.join(base_path, 'assets', 'icon.ico')
+        icon_path = os.path.join(base_path, 'icon.ico')
         if os.path.exists(icon_path):
             from PyQt6.QtGui import QIcon
             self.setWindowIcon(QIcon(icon_path))

@@ -38,6 +38,9 @@ def build_executable():
     
     if icon_path:
         cmd.extend(['--icon', icon_path])
+        assets_dir = os.path.join(project_root, 'assets')
+        if os.path.exists(assets_dir):
+            cmd.extend(['--add-data', f'{assets_dir};assets'])
     
     cmd.append(main_script)
     

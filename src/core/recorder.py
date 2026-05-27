@@ -1,8 +1,6 @@
 import threading
 import time
 import os
-import signal
-import sys
 from datetime import datetime
 
 from src.core.capture import ScreenCapture
@@ -79,7 +77,8 @@ class RecorderManager:
             )
             
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            audio_file = os.path.join(output_dir or os.path.join(os.path.expanduser("~"), "Videos", "LiteRecord"), f"audio_{timestamp}.wav")
+            audio_file = os.path.join(output_dir or os.path.join(os.path.expanduser("~"), "Videos", "CapSure"), f"audio_{timestamp}.wav")
+            self._current_audio_file = audio_file
             
             self.audio_capture = AudioCapture(
                 mic_volume=mic_volume,
@@ -124,6 +123,7 @@ class RecorderManager:
         
         if self.audio_capture:
             self.audio_capture.stop()
+            self.audio_capture.save()
         
         result = None
         if self.video_encoder:
@@ -171,7 +171,7 @@ class RecorderManager:
             if self.screen_capture:
                 self.screen_capture.start()
             if self.audio_capture:
-                self.audio_capture.start()
+                self.audio_capture.start(audio_file_path=self._current_audio_file)
             self._notify_state_change(RecordingState.RECORDING)
     
     def _on_frame_captured(self, frame):

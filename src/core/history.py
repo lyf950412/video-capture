@@ -1,14 +1,17 @@
 import os
 import json
 import shutil
+import logging
 from datetime import datetime
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 class RecordingHistory:
     def __init__(self, history_file=None):
         if history_file is None:
-            history_dir = os.path.join(os.path.expanduser("~"), "Videos", "LiteRecord")
+            history_dir = os.path.join(os.path.expanduser("~"), "Videos", "CapSure")
             os.makedirs(history_dir, exist_ok=True)
             history_file = os.path.join(history_dir, "history.json")
         
@@ -21,7 +24,7 @@ class RecordingHistory:
             try:
                 with open(self.history_file, 'r', encoding='utf-8') as f:
                     self.recordings = json.load(f)
-            except:
+            except Exception:
                 self.recordings = []
     
     def _save_history(self):
@@ -29,7 +32,7 @@ class RecordingHistory:
             with open(self.history_file, 'w', encoding='utf-8') as f:
                 json.dump(self.recordings, f, indent=2, ensure_ascii=False)
         except Exception as e:
-            print(f"Failed to save history: {e}")
+            logger.error(f"Failed to save history: {e}")
     
     def add_recording(self, file_path, duration, file_size, fps=30, format="mp4"):
         if not os.path.exists(file_path):
@@ -73,7 +76,7 @@ class RecordingHistory:
             if os.path.exists(file_path):
                 try:
                     os.remove(file_path)
-                except:
+                except Exception:
                     pass
             
             self.recordings.remove(recording)

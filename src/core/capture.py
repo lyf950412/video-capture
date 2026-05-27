@@ -1,9 +1,11 @@
 import mss
 import mss.tools
 import numpy as np
-from PIL import Image
 import threading
 import time
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ScreenCapture:
@@ -60,7 +62,7 @@ class ScreenCapture:
                         time.sleep(sleep_time)
                     last_time = time.time()
                 except Exception as e:
-                    print(f"Screen capture error: {e}")
+                    logger.error(f"Screen capture error: {e}")
                     time.sleep(0.01)
     
     def get_monitor_info(self):

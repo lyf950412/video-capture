@@ -4,12 +4,15 @@ import signal
 import threading
 import time
 import json
+import logging
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 
 class CrashProtection:
     def __init__(self, temp_dir=None):
-        self.temp_dir = temp_dir or os.path.join(os.path.expanduser("~"), "Videos", "LiteRecord", ".temp")
+        self.temp_dir = temp_dir or os.path.join(os.path.expanduser("~"), "Videos", "CapSure", ".temp")
         os.makedirs(self.temp_dir, exist_ok=True)
         self.is_active = False
         self.recorder_ref = None
@@ -62,7 +65,7 @@ class CrashProtection:
                         os.rename(temp_video, final_path)
                         self._log_crash_recovery(final_path)
             except Exception as e:
-                print(f"Crash recovery error: {e}")
+                logger.error(f"Crash recovery error: {e}")
     
     def _save_session_state(self):
         session_file = os.path.join(self.temp_dir, "current_session.json")
@@ -77,14 +80,14 @@ class CrashProtection:
             with open(session_file, 'w') as f:
                 json.dump(session_data, f, indent=2)
         except Exception as e:
-            print(f"Failed to save session state: {e}")
+            logger.error(f"Failed to save session state: {e}")
     
     def _clear_session_state(self):
         session_file = os.path.join(self.temp_dir, "current_session.json")
         if os.path.exists(session_file):
             try:
                 os.remove(session_file)
-            except:
+            except Exception:
                 pass
     
     def _register_signal_handlers(self):
@@ -111,7 +114,7 @@ class CrashProtection:
         try:
             with open(recovery_log, 'w') as f:
                 json.dump(self.crash_log, f, indent=2)
-        except:
+        except Exception:
             pass
     
     def get_recovery_files(self):

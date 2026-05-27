@@ -11,10 +11,10 @@ from src.core.encoder import VideoEncoder
 
 def test_recording():
     print("=" * 50)
-    print("轻录 LiteRecord - 录制功能测试")
+    print("CapSure - 录制功能测试")
     print("=" * 50)
     
-    output_dir = os.path.join(os.path.expanduser("~"), "Videos", "LiteRecord")
+    output_dir = os.path.join(os.path.expanduser("~"), "Videos", "CapSure")
     os.makedirs(output_dir, exist_ok=True)
     
     test_file = os.path.join(output_dir, "test_recording.mp4")

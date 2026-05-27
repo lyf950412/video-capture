@@ -55,7 +55,7 @@ python scripts/build.py
 
 ```
 video-record/
-── main.py                 # 程序入口
+├── main.py                 # 程序入口
 ├── requirements.txt        # 依赖列表
 ├── assets/
 │   └── icon.ico           # 应用图标
@@ -70,7 +70,7 @@ video-record/
 │       ├── recorder.py    # 录制管理器
 │       ├── crash_protection.py  # 崩溃保护
 │       └── history.py     # 录制历史
-── ui/
+├── ui/
     └── main_window.py     # 主界面
 ```
 

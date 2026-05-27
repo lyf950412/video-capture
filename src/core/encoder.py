@@ -3,14 +3,17 @@ import numpy as np
 import os
 import time
 import threading
+import logging
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 
 class VideoEncoder:
     def __init__(self, output_dir=None, fps=30, format="mp4"):
         self.fps = fps
         self.format = format
-        self.output_dir = output_dir or os.path.join(os.path.expanduser("~"), "Videos", "LiteRecord")
+        self.output_dir = output_dir or os.path.join(os.path.expanduser("~"), "Videos", "CapSure")
         self.writer = None
         self.current_file = None
         self.frame_count = 0
@@ -87,25 +90,25 @@ class VideoEncoder:
             if on_merge_complete:
                 on_merge_complete(self.current_file)
         except Exception as e:
-            print(f"Async merge error: {e}")
+            logger.error(f"Async merge error: {e}")
             if on_merge_complete:
                 on_merge_complete(None)
     
     def _merge_audio(self, audio_file_path):
         try:
-            print(f"Merging audio from: {audio_file_path}")
-            print(f"Video file: {self.current_file}")
+            logger.info(f"Merging audio from: {audio_file_path}")
+            logger.info(f"Video file: {self.current_file}")
             
             try:
                 from moviepy import VideoFileClip, AudioFileClip
-                print("Imported from moviepy (v2.x)")
+                logger.info("Imported from moviepy (v2.x)")
             except ImportError as e:
-                print(f"Import from moviepy failed: {e}")
+                logger.info(f"Import from moviepy failed: {e}")
                 try:
                     from moviepy.editor import VideoFileClip, AudioFileClip
-                    print("Imported from moviepy.editor (v1.x)")
+                    logger.info("Imported from moviepy.editor (v1.x)")
                 except ImportError as e2:
-                    print(f"Import from moviepy.editor failed: {e2}")
+                    logger.error(f"Import from moviepy.editor failed: {e2}")
                     raise
             
             temp_file = self.current_file.replace(f".{self.format}", "_temp.mp4")
@@ -113,7 +116,7 @@ class VideoEncoder:
             video_clip = VideoFileClip(self.current_file)
             audio_clip = AudioFileClip(audio_file_path)
             
-            print(f"Video duration: {video_clip.duration}s, Audio duration: {audio_clip.duration}s")
+            logger.info(f"Video duration: {video_clip.duration}s, Audio duration: {audio_clip.duration}s")
             
             final_clip = video_clip.with_audio(audio_clip)
             final_clip.write_videofile(
@@ -129,7 +132,7 @@ class VideoEncoder:
             final_clip.close()
             
             if os.path.exists(temp_file):
-                print(f"Merge successful, replacing original file")
+                logger.info("Merge successful, replacing original file")
                 if os.path.exists(self.current_file):
                     os.remove(self.current_file)
                 os.rename(temp_file, self.current_file)
@@ -137,14 +140,14 @@ class VideoEncoder:
                 
                 if os.path.exists(audio_file_path):
                     os.remove(audio_file_path)
-                    print(f"Cleaned up audio file: {audio_file_path}")
+                    logger.info(f"Cleaned up audio file: {audio_file_path}")
             else:
-                print(f"Merge failed: temp file not created")
+                logger.error("Merge failed: temp file not created")
         except ImportError:
-            print("moviepy not installed. Video saved without audio.")
+            logger.info("moviepy not installed. Video saved without audio.")
         except Exception as e:
             import traceback
-            print(f"Failed to merge audio: {e}")
+            logger.error(f"Failed to merge audio: {e}")
             traceback.print_exc()
     
     def get_file_size(self):
